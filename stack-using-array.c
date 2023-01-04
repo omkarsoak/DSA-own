@@ -1,14 +1,22 @@
+/*STACK USING ARRAY*/
 #include <stdio.h>
 #include <stdlib.h>
 
-struct stack
+typedef struct stack
 {
     int size;
     int top;
     int *arr;
-};
+}stack;
 
-int isempty(struct stack *ptr)
+void stack_initialize(stack *s,int size)
+{
+    s->size = size;
+    s->top = -1;
+    s->arr = (int*)malloc(s->size*sizeof(int));
+}
+
+int isempty(stack *ptr)
 {
     if(ptr->top==-1)
     {return 1;}
@@ -16,27 +24,27 @@ int isempty(struct stack *ptr)
     {return 0;}
 }
 
-int isfull(struct stack *ptr)
+int isfull(stack *ptr)
 {
     if(ptr->top==(ptr->size-1))
     {return 1;}
     else
-    {return 0;}
-    
+    {return 0;} 
 }
 
-void stack_traversal(struct stack *ptr)
+void stack_traversal(stack *ptr)
 {
     for(int i=0;i<=ptr->top;i++)
     {
-        printf("%d\n",ptr->arr[i]);
+        printf("%d ",ptr->arr[i]);
     }
+    printf("\n");
 }
 
-void push(struct stack *ptr,int data)
+void push(stack *ptr,int data)
 {
-    if(isfull(ptr)==1)
-    {printf("Stack overflow\n");}
+    if(isfull(ptr)==1)  //stack overflow
+    {return;}
     else
     {
         ptr->top++;
@@ -44,13 +52,10 @@ void push(struct stack *ptr,int data)
     }
 }
 
-int pop(struct stack *ptr)
+int pop(stack *ptr)
 {
-    if(isempty(ptr)==1)
-    {
-        printf("Stack underflow\n");
-        return -1;
-    }
+    if(isempty(ptr)==1)  //stack underflow
+    {return -1;}
     else
     {
         int data = ptr->arr[ptr->top];
@@ -59,47 +64,27 @@ int pop(struct stack *ptr)
     }
 }
 
-int peek(struct stack *ptr,int i)
+int peek(stack ptr)   //returns top value
 {
-    if((ptr->top-i+1)<0)
-    {
-        return -1;
-    }
+    if(isempty(&ptr))
+    {return -1;}
     else
-    {
-        return ptr->arr[ptr->top-i+1];
-    }   
-}
-
-int stack_top(struct stack *ptr)
-{
-    return ptr->arr[ptr->top];
-}
-
-int stack_bottom(struct stack *ptr)
-{
-    return ptr->arr[0];
+    {return ptr.arr[ptr.top];}   
 }
 
 int main()
 {
-    struct stack *s;
-    s->size = 10;
-    s->top = -1;
-    s->arr = (int*)malloc(s->size*sizeof(int));
-    //push elements manually
-    s->arr[0] = 4;
-    s->top++;
-    s->arr[1] = 22;
-    s->top++;
-    s->arr[2] = 31;
-    s->top++;
-
-    push(s,11);
-    stack_traversal(s);
-    printf("poped from the stack: %d\n",pop(s));
-    stack_traversal(s);
-    printf("Stack top is: %d\n",stack_top(s));
-    printf("Stack bottom is: %d\n",stack_bottom(s));
+    stack s1;
+    stack_initialize(&s1,10);
+    push(&s1,10);
+    push(&s1,12);
+    push(&s1,11);
+    push(&s1,13);
+    push(&s1,15);
+    printf("peek: %d\n",peek(s1));
+    stack_traversal(&s1);
+    printf("poped from the stack: %d\n",pop(&s1));
+    stack_traversal(&s1);
+    printf("Stack top is: %d\n",peek(s1));
     return 0;
 }
