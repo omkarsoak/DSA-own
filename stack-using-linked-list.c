@@ -1,3 +1,4 @@
+/*STACK USING LINKED LIST*/
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -7,16 +8,16 @@ typedef struct node
     struct node *next;
 }node;
 
-node* top=NULL;  
-//here top is made global variable to avoid problems in pop() function
+typedef node* stack;
 
 void linked_list_traversal(node* ptr)
 {
     while(ptr!=NULL)
     {
-        printf("Element is: %d\n",ptr->data);
+        printf("%d ",ptr->data);
         ptr = ptr->next;
     }
+    printf("\n");
 }
 
 int is_empty(node* top)
@@ -36,41 +37,37 @@ int is_full(node* top)
     {return 0;}
 }
 
-node* push(node* top,int data)
+void push(node** top,int data)
 {
-    if(is_full(top)==1)
+    if(is_full(*top)==1)
     {printf("Stack overflow\n");}
     else
     {
         node* n = (node*)malloc(sizeof(node));
         n->data = data;
-        n->next = top;
-        top = n;
-        return top;
+        n->next = *top;
+        *top = n;
     }
 }
 
-int pop(node* tp)
+int pop(node** top)
 {
-    if(is_empty(top)==1)
+    if(is_empty(*top)==1)
     {printf("Stack underflow\n");}
     else
     {
-        node* n = tp;
-        top = tp->next;
-        int data = n->data;
-        free(n);
+        node* top1 = *top;
+        int data = top1->data;
+        top1 = top1->next;
+        free(top);
+        *top = top1;
         return data;
     }
 }
 
-int peek(node* top,int index)
+int peek(node* top)  //returns the data at the top
 {
     node* ptr = top;
-    for(int i=0;(i<index-1 && ptr!=NULL);i++)
-    {
-        ptr = ptr->next;
-    }
     if(ptr!=NULL)
     {
         return ptr->data;
@@ -79,34 +76,19 @@ int peek(node* top,int index)
     {return -1;}
 }
 
-int stack_top(node* top)
-{
-    return top->data;
-}
-
-int stack_bottom(node* top)
-{
-    node* ptr = top;
-    while(ptr->next!=NULL)
-    {
-        ptr = ptr->next;
-    }
-    return ptr->data;
-}
-
 int main()
 {
-    top = push(top,28);
-    top = push(top,32);
-    top = push(top,11);
-    top = push(top,8);
-    top = push(top,4);
-    linked_list_traversal(top);
-    printf("Element poped is: %d\n",pop(top));
-    linked_list_traversal(top);
-    printf("The element at index %d is: %d\n",2,peek(top,2));
-    printf("Stack top is: %d\n",stack_top(top));
-    printf("Stack bottom is: %d\n",stack_bottom(top));
-
+    stack s1 = NULL;
+    push(&s1,10);
+    push(&s1,20);
+    push(&s1,30);
+    push(&s1,40);
+    push(&s1,50);
+    linked_list_traversal(s1);
+    
+    pop(&s1);
+    pop(&s1);
+    linked_list_traversal(s1);
+    printf("%d ",peek(s1));
     return 0;
 }
