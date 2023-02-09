@@ -8,6 +8,8 @@ typedef struct node
     struct node* next;
 }node;
 
+typedef node* list;
+
 void front_traversal(node* head)
 {
     node* ptr= head;
@@ -22,7 +24,7 @@ void front_traversal(node* head)
 void back_transversal(node* last)
 {
     node* ptr = last;
-    while(ptr!=NULL)
+    while(ptr->prev!=NULL)
     {
         printf("%d ",ptr->data);
         ptr = ptr->prev;
@@ -32,16 +34,44 @@ void back_transversal(node* last)
 
 void insert_at_begining(node** head_ref,int data)
 {
-    node* new_node = (node*)malloc(sizeof(node));  
-    new_node->data = data;
+    node* new_node = (node*)malloc(sizeof(node));
+    new_node->data = data;  
+    if((*head_ref)==NULL)
+    {
+        new_node->next = NULL;
+        new_node->prev = NULL;
+        (*head_ref) = new_node;
+        return;
+    }
+
+    (*head_ref)->prev = new_node;
     new_node->next = (*head_ref);  //new_node->next points to head
     new_node->prev = NULL;   //as first node->prev always points to null
-    if(*head_ref!=NULL)
-    {
-        (*head_ref)->prev =  new_node->prev;
-    }
     (*head_ref) = new_node;  //head points to new_node
 }
+
+void insert_at_end(node** head_ref,int data)
+{
+    node* new_node = (node*)malloc(sizeof(node));
+    new_node->data = data;
+    if((*head_ref)==NULL)
+    {
+        new_node->next = NULL;
+        new_node->prev = NULL;
+        (*head_ref) = new_node;
+        return;
+    }
+    node* p = (*head_ref);
+    while (p->next!=NULL)
+    {
+        p = p->next;
+    }
+    new_node->next = NULL;
+    new_node->prev = p;
+    p->next = new_node;
+}
+
+
 
 int main()
 {
@@ -50,7 +80,7 @@ int main()
     insert_at_begining(&head,2);
     insert_at_begining(&head,4);
     insert_at_begining(&head,5);
+    insert_at_end(&head,10);
     front_traversal(head);
-    back_transversal(head->next->next);
     return 0;
 }
