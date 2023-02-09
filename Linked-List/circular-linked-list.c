@@ -26,7 +26,7 @@ void insert_at_first(node** head_ref,int data)
         (*head_ref) = ptr;
         (*head_ref)->next = (*head_ref);
     }
-    node* p = (*head_ref)->next;
+    node* p = (*head_ref);
     while(p->next!=(*head_ref))
     {
         p = p->next;
@@ -35,6 +35,8 @@ void insert_at_first(node** head_ref,int data)
     ptr->next = (*head_ref);
     (*head_ref) = ptr;
 }
+
+//all other functions same as SLL
 
 int main()
 {
