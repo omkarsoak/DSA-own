@@ -1,14 +1,17 @@
 /***********
 CONVERTS INFIX TO POSTFIX AND THEN EVALUATES THE EQUATION
+
 INPUT:
 1. INFIX EXPRESSION AS STRING
 OUTPUT:
 1. POSTFIX EXPRESSION AS LINKED LIST
 2. ANSWER AFTER EVALUATING POSTFIX EXPRESSION
+
 METHOD:
 1. CONVERT INPUT STRING TO LINKED LIST (INFIX)
 2. CONVERT (INFIX LINKED LIST) TO (POSTFIX LINKED LIST)
 3. EVALUATE POSTFIX LINKED LIST EXPRESSION
+
 USED:
 1. 2 LINKED LIST (INFIX & POSTFIX)
 2. 2 STACK (DURING CONVERSION & DURING EVALUATION)
@@ -96,11 +99,10 @@ char pop(node** top)
     {printf("Stack underflow\n");}
     else
     {
-        node* top1 = *top;
-        char data = top1->data;
-        top1 = top1->next;
-        free(*top);
-        *top = top1;
+        node* temp = *top;
+        char data = (*top)->data;
+        (*top) = (*top)->next;
+        //free(temp);
         return data;
     }
 }
@@ -260,8 +262,8 @@ int main()
     printf("Postfix: ");
     linked_list_traversal(postfix);
 
-    //int ans = evaluate_postfix(&postfix);
-    //printf("The answer is: %d\n",ans);
+    int ans = evaluate_postfix(&postfix);
+    printf("The answer is: %d\n",ans);
 
     return 0;
 }
