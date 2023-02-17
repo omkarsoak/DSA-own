@@ -56,11 +56,10 @@ int pop(node** top)
     {printf("Stack underflow\n");}
     else
     {
-        node* top1 = *top;
-        int data = top1->data;
-        top1 = top1->next;
-        free(top);
-        *top = top1;
+        node* temp = *top;
+        int data = (*top)->data;
+        (*top) = (*top)->next;
+        free(temp);
         return data;
     }
 }
