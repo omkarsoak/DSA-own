@@ -1,0 +1,7 @@
+getheight
+getdepth
+counting number of nodes
+find ancestors
+find parent
+type of tree 
+mirror a tree
