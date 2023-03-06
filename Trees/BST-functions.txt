@@ -5,3 +5,10 @@ find ancestors
 find parent
 type of tree 
 mirror a tree
+numberof leaf nodes
+path
+iscomplete
+isfull
+find successors
+find predecessors
+
