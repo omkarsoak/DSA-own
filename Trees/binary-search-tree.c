@@ -267,6 +267,91 @@ int isBST(node* root)   //based on InOrder traversal
     }
 }
 
+//count number of nodes (recursive)
+int count_nodes(node* root)
+{
+    if(root==NULL)
+    {
+        return 0;
+    }
+    return 1 + count_nodes(root->left) + count_nodes(root->right);
+}
+
+//count number of nodes (using stack)
+int Count_nodes(node* root)
+{
+
+}
+
+//count number of nodes (using queue)
+
+
+//count no of leaf nodes
+int count_leaf_nodes(node* root)
+{
+    if(root==NULL)
+    {
+        return 0;
+    }
+    if(root->left==NULL && root->right==NULL)
+    {
+        return 1;
+    }
+    return count_leaf_nodes(root->left) + count_leaf_nodes(root->right);
+}
+
+//count no of internal nodes
+int count_internal_nodes(node* root)
+{
+    if(root==NULL)
+    {
+        return 0;
+    }
+    if(root->left != NULL && root->right != NULL)
+    {
+        return 1;
+    }
+    return count_internal_nodes(root->left) + count_internal_nodes(root->right);
+}
+//check if tree is full
+int isFullTree(node* root) //full tree = each node has either 0 or 2 children
+{
+    if(root==NULL)
+    {
+        return 1;
+    }
+    if(root->left==NULL && root->right==NULL)
+    {
+        return 1;
+    }
+    if((root->left==NULL && root->right!=NULL) || (root->left!=NULL && root->right==NULL) )
+    {
+        return 0;
+    }
+    return isFullTree(root->left) && isFullTree(root->right);
+}
+
+//find height of tree
+int max(int a,int b)
+{
+    if(a > b)
+        return a;
+    else 
+        return b;
+}
+int height(node* root)
+{
+    if(root==NULL)
+    {
+        return -1;
+    }
+    return 1 + max(height(root->left),height(root->left));
+}
+
+//find mirror image of the tree
+
+//non recursive inorder preorder postorder
+
 int main()
 {
     node* root = NULL;
@@ -278,8 +363,13 @@ int main()
     Insert(root,4);
     InOrder(root);
     //Delete(root,3);
-    delete(root,3);
-    InOrder(root);
+    //delete(root,3);
+    //InOrder(root);
     printf("\n%d ",isBST(root));
+    printf("\n%d ",count_nodes(root));
+    printf("\n%d ",count_leaf_nodes(root));
+    printf("\n%d ",count_internal_nodes(root));
+    printf("\n%d ",isFullTree(root));
+    printf("\n%d ",height(root));
     return 0;
 }
