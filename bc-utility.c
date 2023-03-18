@@ -1,17 +1,34 @@
 /*****************
-BASIC CALCULATOR :
-INPUT: STRING OF NUMBERS AND '+' IN BETWEEN 
-OUPUT: ANSWER
+LINUX UTILITY 'bc':
+An arbitrary precision calculator which can compute arbitrary length of expression
+Input: On the command line
+INPUT: STRING OF NUMBERS AND '+ - * /' IN BETWEEN 
+OUPUT: ANSWER 
 EXAMPLE:
-198237918479+83634875862
-Num 1: 1  9  8  2  3  7  9  1  8  4  7  9
-Num 2: 8  3  6  3  4  8  7  5  8  6  2
-Answer: 2  8  1  8  7  2  7  9  4  3  4  1
+198237918479+83634875862-123312*242
+Answer: 2  8  1  8  4  2  9  5  2  8  3  7
+
+DATA STRUCTURES USED:
+- LINKED LIST (to store each number with each digit as a node in the LL)
+- NODE STACK (stores the numbers as pointer to head node of LL during infix evaluation)
+- char STACK (stores operators during infix evaluation)
+
+FUNCTIONS:
+- All LL functions
+- All Stack functions (one each for node* stack and char stack)
+- Add Two Linked Lists
+- Subtract Two Linked Lists
+- Multiply Two Linked Lists
+- Divide Two Linked Lists
+- Compare 2 LL (to find greater list)
+- Evaluate infix (directly without needing to convert to postfix - using 2 stack)
 ****************/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+
+/*******Linked list functions & definition**********/
 typedef struct node
 {
     int data;
@@ -67,7 +84,7 @@ void traverse_list(node* head)
     printf("\n");
 }
 
-int reverse_list(node** head_ref)
+int reverse_list(node** head_ref)  //reverses list & returns size of list
 {
     node* prev = NULL;
     node* current = *head_ref;
@@ -93,6 +110,7 @@ node* create_new_node(int data)
     return nn;
 }
 
+/********OPERATIONS*********/
 //Add
 node* add_Two_Lists(node** first_ref, node** second_ref)
 {
@@ -106,9 +124,7 @@ node* add_Two_Lists(node** first_ref, node** second_ref)
     while (first != NULL || second != NULL) 
     {
         int s1,s2;
-
         //Conditions for unequal length of lists
-
         if(first!=NULL)
         {s1 = first->data;}
         else
@@ -144,7 +160,7 @@ node* add_Two_Lists(node** first_ref, node** second_ref)
 }
 
 //Subtract
-int findLength(node* ptr)
+int findLength(node* ptr)  //find length of LL
 {
     int size = 0;
     while (ptr != NULL) 
@@ -155,14 +171,14 @@ int findLength(node* ptr)
     return size;
 }
 
-node* paddZeros(node* snode, int diff)
+node* paddZeros(node* snode, int diff)   //add zeros to the front to make length same
 {
     if (snode == NULL)
         return NULL;
     
     while (diff!=0) 
     {
-        insert_at_end(&snode,0);
+        insert_at_begining(&snode,0);
         diff--;
     }
     return snode;
@@ -173,42 +189,42 @@ node* subtract_helper(node* l1,node* l2)
 {
     if (l1 == NULL && l2 == NULL && borrow == 0)
         return NULL;
-  
-    node* previous = subtract_helper(
-        l1 ? l1->next : NULL, l2 ? l2->next : NULL);
-  
+
+    node* previous = subtract_helper(l1 ? l1->next : NULL, l2 ? l2->next : NULL);
     int d1 = l1->data;
     int d2 = l2->data;
     int sub = 0;
   
-    /* if you have given the value to next digit then
-       reduce the d1 by 1 */
-    if (borrow) {
+    //if you have given the value to next digit then reduce the d1 by 1
+    if (borrow) 
+    {
         d1--;
         borrow = 0;
     }
   
-    /* If d1 < d2, then borrow the number from previous
-       digit. Add 10 to d1 and set borrow = true; */
-    if (d1 < d2) {
+    //If d1 < d2, then borrow the number from previous digit. Add 10 to d1 and set borrow = true;
+    if (d1 < d2) 
+    {
         borrow = 1;
         d1 = d1 + 10;
     }
   
-    /* subtract the digits */
+    //subtract the digits
     sub = d1 - d2;
   
-    /* Create a node with sub value */
+    //Create a node with sub value
     node* current = create_new_node(sub);
   
-    /* Set the Next pointer as Previous */
+    //Set the Next pointer as Previous
     current->next = previous;
-  
+
     return current;
 }
 
 node* subtract_Two_Lists(node** first_ref,node** second_ref)
 {
+    int num1Length = reverse_list(first_ref);
+    int num2Length = reverse_list(second_ref);
     node* num1 = (*first_ref);
     node* num2 = (*second_ref);
     node* result;
@@ -218,20 +234,24 @@ node* subtract_Two_Lists(node** first_ref,node** second_ref)
     node* temp1 = num1;
     node* temp2 = num2;
 
-    int num1Length = findLength(num1);
-    int num2Length = findLength(num2);
-
     if(num1Length!=num2Length)
     {
-        lnode = num1Length > num2Length ? num1 : num2;
-        snode = num1Length > num2Length ? num2 : num1;
+        if(num1Length > num2Length)
+        {
+            lnode = num1; snode = num2;
+        }
+        else
+        {
+            lnode = num2; snode = num1;
+        }
         snode = paddZeros(snode, abs(num1Length - num2Length));
     }
     else
     {
         while (num1 && num2) 
         {
-            if (num1->data != num2->data) {
+            if (num1->data != num2->data) 
+            {
                 lnode = num1->data > num2->data ? temp1 : temp2;
                 snode = num1->data > num2->data ? temp2 : temp1;
                 break;
@@ -248,6 +268,7 @@ node* subtract_Two_Lists(node** first_ref,node** second_ref)
 
     borrow = 0;
     result = subtract_helper(lnode, snode);
+    reverse_list(&result);
     return result;
 }
 
@@ -262,16 +283,11 @@ node* make_empty_list(int size)
 
 node* multiply_Two_Lists(node** first_ref, node** second_ref)
 {
-	// reverse the lists to multiply from end
-	// m and n lengths of linked lists to make
-	// and empty list
     int m = findLength(*first_ref);
     int n = findLength(*second_ref);
 
 	node* result = make_empty_list(m + n + 1);
 
-	// pointers for traverse linked lists and also
-	// to reverse them after
 	node* second_ptr = (*second_ref);
     node* result_ptr1 = result;
     node* result_ptr2 = NULL;
@@ -287,14 +303,12 @@ node* multiply_Two_Lists(node** first_ref, node** second_ref)
 
 		while (first_ptr) 
         {
-			// multiply a first list's digit with a
-			// current second list's digit
+			// multiply a first list's digit with a current second list's digit
 			int mul = first_ptr->data * second_ptr->data + carry;
 
 			result_ptr2->data += mul % 10;
 
-			// now resultant node itself can have more
-			// than 1 digit
+			// now resultant node itself can have more than 1 digit
 			carry = mul / 10 + result_ptr2->data / 10;
 			result_ptr2->data = result_ptr2->data % 10;
 
@@ -303,7 +317,8 @@ node* multiply_Two_Lists(node** first_ref, node** second_ref)
 		}
 
 		// if carry is remaining from last multiplication
-		if (carry > 0) {
+		if (carry > 0) 
+        {
 			result_ptr2->data += carry;
 		}
 
@@ -311,12 +326,12 @@ node* multiply_Two_Lists(node** first_ref, node** second_ref)
 		second_ptr = second_ptr->next;
 	}
 
-	// reverse the result_list as it was populated
-	// from last node
+	// reverse the result_list as it was populated from last node
 	reverse_list(&result);
 
 	// remove if there are zeros at starting
-	while (result->data == 0) {
+	while (result->data == 0) 
+    {
 		struct node* temp = result;
 		result = result->next;
 		free(temp);
@@ -326,8 +341,7 @@ node* multiply_Two_Lists(node** first_ref, node** second_ref)
 }
 
 //Divide
-
-int compare_LL(node* first, node* second)
+int compare_LL(node* first, node* second)  //compares 2 numbers stored as LL and returns the larger one
 {
     node* p1 = first;
     node* p2 = second;
@@ -352,13 +366,13 @@ int compare_LL(node* first, node* second)
     }
     else if(findLength(first) > findLength(second))
     {
-        return 1;
+       return 1;
     }
     else if(findLength(first) < findLength(second))
     {
         return 2;
     }
-
+    return 1;
 }
 
 node* copy_LL(node* head)
@@ -373,39 +387,21 @@ node* copy_LL(node* head)
     return result;
 }
 
-void remove_padding(node** head_ref)
-{
-    node* ptr = (*head_ref);
-    int count = 0;
-    while(ptr->next!=NULL)
-    {
-        if(ptr->data == 0)
-        {
-            count++;
-        }
-        ptr = ptr->next;
-    }
-    if(count == 0)
-    {
-        return;
-    }
-    for(int i=0;i<=count;i++)
-    {
-        delete_node_atValue(head_ref,0);
-    }
-}
-
 node* divide_Two_lists(node** first_ref,node** second_ref)
 {
-    int size1 = reverse_list(first_ref);
-    int size2 = reverse_list(second_ref);
-    node* first = (*first_ref);
-    node* second = (*second_ref);
-    node* second_copy = copy_LL(second);
+    node* first = (*second_ref);
+    node* second = (*first_ref);
     node* result = NULL;
     node* one = NULL;
     insert_at_begining(&one,1);
-    int greater = compare_LL(first,second);\
+
+    reverse_list(&first);
+    reverse_list(&second);
+    node* second_copy = copy_LL(second);
+    int greater = compare_LL(first,second);
+    reverse_list(&first);
+    reverse_list(&second);
+
     if(greater == 2)
     {
         result = make_empty_list(1);
@@ -415,20 +411,21 @@ node* divide_Two_lists(node** first_ref,node** second_ref)
         int large = 1;
         while(large == 1)
         {
-            first = subtract_Two_Lists(&first,&second_copy);
-
-            remove_padding(&second_copy);
-         
+            second = add_Two_Lists(&second,&second_copy);
             result = add_Two_Lists(&result,&one);
-           
-            large = compare_LL(first,second_copy);
+
+            reverse_list(&first);
+            reverse_list(&second);
+            large = compare_LL(first,second);
+            reverse_list(&first);
+            reverse_list(&second);
         }
     }
     return result;
 }
 
 
-//stack
+/********CHAR STACK DEFINITION & FUNCTIONS*******/
 typedef struct stack
 {
     int size;
@@ -491,140 +488,7 @@ char peek(stack ptr)   //returns top value
     {return ptr.arr[ptr.top];}   
 }
 
-int precedence(char symbol)  //assign precendence to operator
-{
-	if(symbol == '^')   //exponent operator, highest precedence
-	{return 3;}
-	else if(symbol == '*' || symbol == '/')
-	{return 2;}
-	else if(symbol == '+' || symbol == '-')         //lowest precedence
-	{return 1;}
-	else
-	{return 0;}
-}
-
-int is_operator(char symbol)   
-{
-	if(symbol == '^' || symbol == '*' || symbol == '/' || symbol == '+' || symbol =='-')
-	{return 1;}
-	else
-	{return 0;}
-}
-
-int is_operand(char ch)
-{
-    return ('0'<=ch && ch<='9');
-}
-
-/***************
-char* infix_to_postfix(char* infix)
-{
-    stack* sp = (stack*)malloc(sizeof(stack));
-    stack_initialize(sp,100);
-
-    char* postfix = (char*)malloc((strlen(infix)+1) * sizeof(char));
-    int i = 0; // Track infix traversal
-    int j = 0; // Track postfix addition 
-    
-    while (infix[i]!='\0')
-    {
-        if (infix[i] == '(')
-        {
-            push(sp,infix[i]);
-            i++;
-        }
-        else if (infix[i] == ')')
-        {
-            while((peek(*sp))!='(')
-            {
-                postfix[j] = pop(sp);
-                j++;
-            }
-            pop(sp);
-            i++;
-        }
-        if(is_operand(infix[i]))
-        {
-            do{
-                postfix[j] = infix[i];
-                j++;
-                i++;
-            } while(is_operand(infix[i]));
-            postfix[j]=' ';
-            j++;
-        }
-        else if(is_operator(infix[i]))
-        {
-            if(precedence(infix[i]) > precedence(peek(*sp)))
-            {
-                push(sp, infix[i]);
-                i++;
-            }
-            else
-            {
-                postfix[j] = pop(sp);
-                j++;
-            }
-        }
-        else 
-        {
-            i++;
-        }
-    }
-    while (!isempty(sp))    
-    {
-        postfix[j] = pop(sp);
-        j++;
-    }
-    postfix[j] = '\0';
-    return postfix;
-}
-
-node** convert_to_lists(char input[],int *counter)
-{
-    int count = 0;
-    int x=0;
-    for(x=0;input[x]!='\0';x++)
-    {
-        if(is_operator(input[x]))
-        {
-            count++;
-        }
-    }
-
-    //printf("count: %d",count);
-    printf("input: %d\n",x);
-    printf("done 0");
-    node** num_ptr_arr = (node**)malloc(sizeof(node*)*(count+1));
-    printf("done1 ");
-    for(int i=0;i<count+1;i++)
-    {
-        printf("done2 ");
-        num_ptr_arr[i] = NULL;
-    }
-
-    printf("done");
-
-    int i=0;
-    for(int x=0;input[x]!='\0';x++)
-    {
-        if(is_operator(input[x]) == 1 || input[x] == ' ')
-        {
-            if(is_operand(input[x+1]))
-            {
-                i++;
-            }
-        }
-        else if(is_operand(input[x]))
-        {
-            insert_at_begining(&num_ptr_arr[i],input[x]-'0');
-        }
-    }
-    *counter = count;
-    return num_ptr_arr;
-}
-****************/
-
+/*****NODE STACK DEFINTION & FUNCTIONS*******/
 typedef struct Stack
 {
     int size;
@@ -688,56 +552,32 @@ node* Peek(Stack ptr)   //returns top value
     {return ptr.arr[ptr.top];}   
 }
 
-/*
-node* evaluate_postfix(node** arr,char postfix[])
+/*****EVALUATE EXPRESSION******/
+//AUXILLARY FUNCTIONS
+int precedence(char symbol)  //assign precendence to operator
 {
-    Stack s1;
-    int i=0;
-    int num_count = 0;
-    while(i < strlen(postfix))
-    {
-        int data = postfix[i];
-        if(is_operand(postfix[i]))
-        {
-            Push(&s1,arr[num_count]);
-            num_count++;
-            while (is_operand(postfix[i]))
-            {
-                i++;
-            }
-        }
-        if(is_operator(postfix[i]))
-        {
-            node* second_op = Pop(&s1);
-            node* first_op = Pop(&s1);
-            node* temp = NULL;
-            switch(postfix[i])
-            {
-                case('+'):
-                    temp = add_Two_Lists(&first_op,&second_op);
-                    break;
-                case('-'):
-                    temp = subtract_Two_Lists(&first_op,&second_op);
-                    break;
-                case('*'):
-                    temp = multiply_Two_Lists(&first_op,&second_op);
-                    break;
-                case('/'):
-                    temp = divide_Two_lists(&first_op,&second_op);
-                    break;
-                default:
-                    break;
-            }
-            Push(&s1,temp);
-            i++;
-        }
-        else
-        {
-            i++;
-        }
-    }
+	if(symbol == '^')   //exponent operator, highest precedence
+	{return 3;}
+	else if(symbol == '*' || symbol == '/')
+	{return 2;}
+	else if(symbol == '+' || symbol == '-')         //lowest precedence
+	{return 1;}
+	else
+	{return 0;}
 }
-*/
+
+int is_operator(char symbol)   
+{
+	if(symbol == '^' || symbol == '*' || symbol == '/' || symbol == '+' || symbol =='-')
+	{return 1;}
+	else
+	{return 0;}
+}
+
+int is_operand(char ch)
+{
+    return ('0'<=ch && ch<='9');
+}
 
 node* operation(node* val1,node* val2,char ops)
 {
@@ -762,6 +602,7 @@ node* operation(node* val1,node* val2,char ops)
     return temp;
 }
 
+//EVALUATE EXPRESSION
 node* evaluate_infix(char infix[])
 {
     int count = 0;
@@ -773,8 +614,6 @@ node* evaluate_infix(char infix[])
             count++;
         }
     }
-
-    //printf("done1: %d",count);
 
     node** num_ptr_arr = (node**)malloc(sizeof(node*)*(count+1));
     for(int i=0;i<count+1;i++)
@@ -790,16 +629,15 @@ node* evaluate_infix(char infix[])
     int i=0;
     int j=0;
 
-    //printf("done2 ");
-
     while(infix[i]!='\0')
     {
+        //brackets functionality remaining
         /*if (infix[i] == '(')
         {
             push(s2,infix[i]);
             i++;
         }
-        else if (infix[i] == ')')  //remaining
+        else if (infix[i] == ')')
         {
             while((peek(*s2))!='(')
             {
@@ -817,7 +655,6 @@ node* evaluate_infix(char infix[])
                 i++;
             } while(is_operand(infix[i]));
             Push(s1,num_ptr_arr[j]);
-            //traverse_list(num_ptr_arr[j]);
             j++;
         }
         else if(is_operator(infix[i]))
@@ -825,7 +662,6 @@ node* evaluate_infix(char infix[])
             if(isempty(s2) == 1)
             {
                 push(s2, infix[i]);
-                //printf("done3: %c\n",infix[i]);
                 i++;
             }
             else
@@ -860,44 +696,16 @@ node* evaluate_infix(char infix[])
 
 int main()
 {
-    node* head1 = NULL;
-    node* head2 = NULL;
     node* result;
-    //printf("Enter the calculation:\n");
-    char infix[100];
-    //scanf("%s",infix);
-
+    printf("Enter the calculation:\n");
+    char infix[200];
+    scanf("%s",infix);
     
-    strcpy(infix,"123+5678");
     result = evaluate_infix(infix);
+    reverse_list(&result);
     traverse_list(result);
-
-    /*int x = 0;
-    while(is_operator(infix[x])!=1)
-    {
-        insert_at_begining(&head1,infix[x]-'0');
-        x++;
-    }
-    x++;
-    while(infix[x]!='\0')
-    {
-        insert_at_begining(&head2,infix[x]-'0');
-        x++;
-    }
-
-    reverse_list(&head1);
-    reverse_list(&head2);
-    traverse_list(head1);
-    traverse_list(head2);
-
-    node* result1 = multiply_Two_Lists(&head1,&head2);
-    traverse_list(result1);*/
 
     return 0;
 }
-
-//add - requires ultya lists , returns ulti list
-//subtract - requires ultya lists, returns ulti list
-//multiply - requires ultya lists, returns ulti list
 
 //norm: require: ulti list, return: ulti list
