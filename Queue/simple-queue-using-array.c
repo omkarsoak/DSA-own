@@ -65,6 +65,12 @@ int dequeue(queue* q)   //deletion at front
     {
         return -1;
     }
+    if(q->front==q->rear)
+    {
+        if(q->size!=0)
+            q->size = 0;
+        return -1;
+    }
     int data = q->arr[q->front];
     q->front++;
     q->size--;
