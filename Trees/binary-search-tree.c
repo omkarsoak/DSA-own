@@ -476,7 +476,12 @@ node* dequeue(queue* q)   //dequeue at front (head node)
 {
     if(q->front==NULL)
     {return NULL;}
-    
+    if(q->front == q->rear)
+    {
+        q->front = NULL;
+        q->rear = NULL;
+        return NULL;
+    }
     qnode* temp = q->front;
     node* data = temp->root;
     q->front = q->front->next;
@@ -541,7 +546,7 @@ int Count_nodes(node* root)
     return count;
 }
 
-//count total number of nodes (using queue)  //NOT WORKING
+//count total number of nodes (using queue)
 int Count_Nodes(node* root)
 {
     int count = 0;
@@ -552,9 +557,8 @@ int Count_Nodes(node* root)
     while(isempty(&q1)!=1)
     {
         current = peek_front(&q1);
-        //printf("%d ",current->data);
+        dequeue(&q1);
         count++;
-        printf("%d ",count);
         if(current->left!=NULL)
         {
             enqueue(&q1,current->left);
@@ -562,8 +566,7 @@ int Count_Nodes(node* root)
         if(current->right!=NULL)
         {
             enqueue(&q1,current->right);
-        }
-        dequeue(&q1);
+        }       
     }
     return count;
 }
@@ -582,18 +585,14 @@ int count_leaf_nodes(node* root)
     return count_leaf_nodes(root->left) + count_leaf_nodes(root->right);
 }
 
-//count no of internal nodes   //NOT WORKING
+//count no of internal nodes   
 int count_internal_nodes(node* root)
 {
-    if(root==NULL)
+    if(root==NULL || (root->left == NULL && root->right == NULL))
     {
         return 0;
     }
-    if(root->left != NULL && root->right != NULL)
-    {
-        return 1;
-    }
-    return count_internal_nodes(root->left) + count_internal_nodes(root->right);
+    return 1 + count_internal_nodes(root->left) + count_internal_nodes(root->right);
 }
 
 //check if tree is full
@@ -674,36 +673,33 @@ void iterative_PreOrder(node* root)
     }
 }
 
-//postorder without recursion   //NOT WORKING
+//postorder without recursion   
 void iterative_PostOrder(node* root)
 {
-    node* current = root;
-    int done = 0;
+    node* curr = root;
+    node* prev = NULL;
     Stack s1;
     Stack_initialize(&s1,100);
-    while(done!=1)
+    while(curr!=NULL || isEmpty(&s1)!=1)
     {
-        if(current!=NULL)
+        if(curr!=NULL)
         {
-            Push(&s1,current);
-            current = current->left;
+            Push(&s1,curr);
+            curr = curr->left;
         }
         else
         {
-            if(isEmpty(&s1)!=1)
+            curr = Peek(s1);
+            if(curr->right==NULL || curr->right==prev)
             {
-                current = Pop(&s1);
-                //current = Peek(s1);
-                if(current->right == NULL)
-                {
-                    printf("%d ",current->data);
-                    //Pop(&s1);
-                }
-                current = current->right;
+                printf("%d ",curr->data);
+                Pop(&s1);
+                prev = curr;
+                curr = NULL;
             }
             else
             {
-                done = 1;
+                curr = curr->right;
             }
         }
     }
@@ -720,6 +716,7 @@ void LevelOrder(node* root)
     while(isempty(&q1)!=1)
     {
         current = peek_front(&q1);
+        dequeue(&q1);
         printf("%d ",current->data);
         if(current->left!=NULL)
         {
@@ -729,8 +726,8 @@ void LevelOrder(node* root)
         {
             enqueue(&q1,current->right);
         }
-        dequeue(&q1);
     }
+    return;
 }
 
 
@@ -770,38 +767,15 @@ int main()
     Insert(root,1); 
     Insert(root,6); 
     Insert(root,4);
-    Insert(root,5);
-    Insert(root,7);
-    Insert(root,100);
+    //Insert(root,5);
+    //Insert(root,7);
+    //Insert(root,100);
     InOrder(root);
     printf("\n");
     //iterative_PostOrder(root);
-    printf("ans: %d ",Count_Nodes(root));
+    //printf("ans: %d ",Count_Nodes(root));
     //printf("ans: %d ",count_internal_nodes(root));
     LevelOrder(root);
-
-    /*queue q1;
-    node* root1 = create_node(10);
-    node* root2 = create_node(20);
-    node* root3 = create_node(30);
-    node* root4 = create_node(40);
-    node* root5 = create_node(50);
-    initialize_queue(&q1);
-    enqueue(&q1,root1);
-    enqueue(&q1,root2);
-    enqueue(&q1,root3);
-    enqueue(&q1,root4);
-    enqueue(&q1,root5);
-    node* temp = dequeue(&q1);
-    //printf("%d ",temp->data);
-    //dequeue(&q1);
-    //dequeue(&q1);
-    //enqueue(&q1,root1);
-    //enqueue(&q1,root3);
-    //enqueue(&q1,root4);
-    //node* temp = dequeue(&q1);
-    //dequeue(&q1);
-    printf("%d ",peek_front(&q1)->data);*/
  
 
     return 0;
