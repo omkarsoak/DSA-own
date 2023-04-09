@@ -48,7 +48,12 @@ int dequeue(queue* q)   //dequeue at front (head node)
 {
     if(q->front==NULL)
     {return -1;}
-    
+    if(q->front == q->rear)  //empty condition
+    {
+        q->front = NULL;
+        q->rear = NULL;
+        return -1;
+    }
     node* temp = q->front;
     int data = temp->data;
     q->front = q->front->next;
@@ -78,6 +83,9 @@ int main()
     enqueue(&q,40);
     enqueue(&q,50);
     dequeue(&q);
+    enqueue(&q,60);
+    enqueue(&q,70);
+    enqueue(&q,80);
     linked_list_traversal(q);
 
     return 0;
