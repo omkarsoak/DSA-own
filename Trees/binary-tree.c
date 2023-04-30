@@ -2,12 +2,15 @@
 BINARY TREE
 OPERATIONS:
 - CreateNode
+- Insert (using toss)
+- Search
 - InOrder, PreOrder, PostOrder traversals
 - isLeaf
 ************/
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 typedef struct node
 {
@@ -54,6 +57,87 @@ void InOrder(node* root)
     InOrder(root->right);      //right subtree
 }
 
+int Search(node* root,int key)   //returns 1 if found
+{
+    if(root==NULL)   //exit condition(key not found)
+    {
+        return 0;
+    }
+    if(key == root->data)   //exit condition (key found)
+    {
+        return 1;
+    }
+
+    int left_result = Search(root->left,key);
+    if(left_result==1)
+    {
+        return 1;
+    }
+
+    int right_result = Search(root->right,key);
+    if(right_result==1)
+    {
+        return 1;
+    }
+}
+
+//generates 0 or 1 randomly at every function call with equal probability 
+int toss()
+{
+    //srand should be called only once
+    static int num = 0;
+    if (num!=1) 
+    {
+        srand(time(NULL));
+        num = 1;
+    }
+    return rand() % 2;
+}
+
+void Insert(node** root_ref,int key)
+{
+    node* root = (*root_ref);
+    node* prev = NULL;
+    if(root==NULL)   //base case
+    {
+        root = create_node(key);
+        return;
+    }
+   
+    while(1)  //infinite loop as return statement is included
+    {
+        prev = root;
+        if(root->data == key)   //check if duplicate (no insertion)
+        {
+            return;
+        }
+        else if(toss() == 0)   //go in left subtree
+        {
+            if(prev->left==NULL)   //leaf node found
+            {
+                prev->left = create_node(key);
+                return;
+            }
+            else
+            {
+                root = root->left;
+            }
+        }
+        else if(toss() == 1)   //go in right subtree
+        {
+            if(prev->right==NULL)  //leaf node found
+            {
+                prev->right = create_node(key);
+                return;
+            }
+            else
+            {
+                root = root->right;
+            }
+        }
+    }
+}
+
 int is_leaf(node* root)
 {
     if(root->left==NULL && root->right==NULL)
@@ -64,17 +148,17 @@ int is_leaf(node* root)
 
 int main()
 {
-    node* root;
+    node* root = NULL;
     root = create_node(1);
-    root->left = create_node(2);
-    root->right= create_node(3);
-    root->left->left = create_node(4);
-    root->left->right = create_node(5);
-    root->right->right = create_node(7);
-    root->right->left = create_node(8);
-    root->right->right->right = create_node(9);
-    //PreOrder(root);
-    //PostOrder(root);
+    Insert(&root,10);
+    Insert(&root,6);
+    Insert(&root,8);
+    Insert(&root,4);
+    Insert(&root,3);
     InOrder(root);
+    printf("\nfound %d\n",Search(root,8));
+    printf("found %d\n",Search(root,6));
+    printf("found %d\n",Search(root,11));
+
     return 0;
 }
