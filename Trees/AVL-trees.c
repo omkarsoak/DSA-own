@@ -1,14 +1,12 @@
-/************
-AVL TREES: SELF BALANCING TREES
-OPERATIONS:
-- INSERTION
-- DELETION
-
-AUXILLARY FUNCTIONS:
-- GET HEIGHT & GET BALANCE FACTOR
-- LEFT ROTATE & RIGHT ROTATE
-- InOrder & PreOrder traversals
-************/
+/*AVL TREE: SELF BALANCING BINARY SEARCH TREE
+FUNCTIONS:
+- LEFT ROTATE
+- RIGHT ROTATE
+- INSERT
+- DELETE
+- DESTROY TREE (USING POSTORDER)
+- INORDER & PREORDER
+*/
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -17,7 +15,7 @@ typedef struct node
     int data;
     struct node* left;
     struct node* right;
-    int height;
+    int balance_factor;
 }node;
 
 node* create_node(int data)
@@ -26,22 +24,8 @@ node* create_node(int data)
     new_node->data = data;
     new_node->left = NULL;
     new_node->right = NULL;
-    new_node->height = 1;
+    new_node->balance_factor = 0;
     return new_node;
-}
-
-int get_height(node* n)
-{
-    if(n==NULL)
-        return 0;
-    return n->height;
-}
-
-int get_balance_factor(node* n)
-{
-    if(n==NULL)
-        return 0;
-    return get_height(n->left) - get_height(n->right);
 }
 
 int max(int a,int b)
@@ -51,6 +35,24 @@ int max(int a,int b)
     else 
         return b;
 }
+
+int get_height(node* root)
+{
+    if(root==NULL)
+    {
+        return -1;
+    }
+    return 1 + max(get_height(root->left),get_height(root->right));
+}
+
+int update_balance_factor(node* root)
+{
+    if(root==NULL)
+        return 0;
+    root->balance_factor =  get_height(root->left) - get_height(root->right);
+    return root->balance_factor;
+}
+
 
 node* left_rotate(node* x)   //left rotate subtree rooted at x
 {
@@ -63,9 +65,10 @@ node* left_rotate(node* x)   //left rotate subtree rooted at x
     y->left = x;
     x->right = T2;
 
-    //update height of x and y
-    x->height = max(get_height(x->right), get_height(x->left)) + 1;
-    y->height = max(get_height(y->right), get_height(y->left)) + 1;
+    //update balance factor of x and y
+    update_balance_factor(x);
+    update_balance_factor(y);
+
     return y;  //return the root of the new rotated subtree
 }
 
@@ -80,14 +83,15 @@ node* right_rotate(node* y)   //right rotate subtree rooted at y
     x->right = y;
     y->left = T2;
 
-    //update height of x and y
-    x->height = max(get_height(x->right), get_height(x->left)) + 1;
-    y->height = max(get_height(y->right), get_height(y->left)) + 1;
+    //update balance factor of x and y
+    update_balance_factor(x);
+    update_balance_factor(y);
+
     return x;  //return the root of the new rotated subtree
 }
 
-node* insert(node* node, int key)   //here, node is the root
-{
+node* insert(node* node,int key) //here, node is the root
+{   
     //Perform Normal BST insertion
     if(node==NULL)   //exit condition (inserting node at correct place)
     {
@@ -106,9 +110,8 @@ node* insert(node* node, int key)   //here, node is the root
         return node;
     }
 
-    //update height and get balance factor of the ancestor node: node
-    node->height = max(get_height(node->left), get_height(node->right)) + 1;
-    int bf = get_balance_factor(node);
+    //get balance factor of the ancestor node: node
+    int bf = update_balance_factor(node);
 
     //here, 'node' is the first imbalanced node
 
@@ -195,30 +198,29 @@ node* delete(node* root,int key)
     }
 
     //Update height and balance factor of root node
-    root->height = max(get_height(root->left), get_height(root->right))+1;
-    int bf = get_balance_factor(root);
+    int bf = update_balance_factor(root);
 
     //Here, 'root' is the node that has replaced the deleted node
     
     //If root becomes unbalanced
     //Left Left case
-    if(bf > 1 && get_balance_factor(root->left)>=0)
+    if(bf > 1 && root->left->balance_factor>=0)
     {
         return right_rotate(root);
     }
     //Right Right case
-    if(bf < -1 && get_balance_factor(root->right)<=0)
+    if(bf < -1 && root->right->balance_factor<=0)
     {
         return left_rotate(root);
     }
     //Left Right case
-    if(bf > 1 && get_balance_factor(root->right) < 0)
+    if(bf > 1 && root->right->balance_factor < 0)
     {
         root->left = left_rotate(root->left);
         return right_rotate(root);
     }
     //Right Left case
-    if(bf < -1 && get_balance_factor(root) > 0)
+    if(bf < -1 && root->balance_factor > 0)
     {
         root->right = right_rotate(root->right);
         return left_rotate(root);
@@ -244,40 +246,33 @@ void PreOrder(node* root)
     PreOrder(root->right);
 }
 
-int Search(node* root,int key)
+void destroyTree(node* root)   //PostOrder traversal
 {
-    if(root == NULL)  //exit condition (key not found)
-        return 0;   
-    else if(root->data == key)  //exit condition (key found)
-        return 1;
-    else if(key < root->data)    //key is less than root (so search in left subtree)
-        return Search(root->left,key);
-
-    else if(key > root->data)   //key is greater than root (so search in right subtree)
-        return Search(root->right,key);
-        
+    if(root==NULL)
+        return;
+    destroyTree(root->left);
+    destroyTree(root->right);
+    printf("Deleted node: %d\n",root->data);
+    free(root);
 }
 
 int main()
 {
-    node* root = NULL;
-    root = insert(root,8);
+    node* root = create_node(8);
     root = insert(root,3);
     root = insert(root,10);
-    root = insert(root,1);
     root = insert(root,6);
     root = insert(root,4);
-    root = insert(root,5);
-    root = insert(root,2);
-    root = insert(root,9);
-    root = insert(root,12);
-    root = insert(root,7);
-    PreOrder(root);
-    printf("\n");
-    delete(root,6);
-    //InOrder(root);
-    PreOrder(root);
-    printf("\n");
-    printf("Element found:%d ",Search(root,10));
+    root = insert(root,1);
+    
+    InOrder(root);printf("\n");
+
+    root = delete(root,8);
+    //root = delete(root,1);
+    
+    InOrder(root);printf("\n");
+
+    destroyTree(root);
+
     return 0;
 }
