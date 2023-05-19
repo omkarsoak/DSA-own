@@ -43,12 +43,49 @@ void display(graph* g)
     return;
 }
 
+int findDegree(graph *g, int ver)
+{
+    int degree = 0;        
+    for (int i=0; i<g->size; i++)   
+    {
+        if (g->arr[ver][i] != 0)
+            degree++;  
+    } 
+
+    //for self loop in graph
+    if(g->arr[ver][ver] != 0)
+        degree++;
+    return degree;        
+}
+
+int* display_degree(graph* g)
+{
+    int* degrees = (int*)malloc(sizeof(int)*g->size);
+    for(int i=0;i<g->size;i++)
+    {
+        degrees[i] = findDegree(g,i);
+    }
+    return degrees;
+}
+
+void print_array(int arr[],int size)
+{
+    for(int i=0;i<size;i++)
+    {
+        printf("%d ",arr[i]);
+    }
+    printf("\n");
+}
 
 int main()
 {
     graph g1;
-    initGraph(&g1,"data.txt");
+    initGraph(&g1,"data2.txt");
     display(&g1);
+
+    int* degrees;
+    degrees = display_degree(&g1);
+    print_array(degrees,g1.size);
 
     return 0;
 }
