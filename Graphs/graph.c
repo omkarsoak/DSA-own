@@ -68,6 +68,34 @@ int* display_degree(graph* g)
     return degrees;
 }
 
+int check_ifAdjacent(graph* g,int ver1,int ver2)
+{
+    if(g->arr[ver1][ver2]!=0)
+    {
+        return 1;
+    }
+    else if(g->arr[ver2][ver1]!=0)
+    {
+        return 1;
+    }
+    return 0;
+}
+
+int check_ifConnected(graph* g)
+{
+    for(int i=0;i<g->size;i++)
+    {
+        for(int j=0;j<g->size;j++)
+        {
+            if(g->arr[i][j]==0 && i!=j)
+            {
+                return 0;
+            }   
+        }
+    }
+    return 1;
+}
+
 void print_array(int arr[],int size)
 {
     for(int i=0;i<size;i++)
