@@ -28,7 +28,7 @@ void initialize_queue(queue* q1)
 
 int isEmpty(queue *q)
 {
-    if(q->front==NULL && q->rear==NULL)
+    if(q->front==NULL || q->rear==NULL)
         return 1;
     else
         return 0;
@@ -87,7 +87,7 @@ int deleteRear(queue* q)
     
 }
 
-void linked_list_traversal(queue q)
+void displayQueue(queue q)
 {
     node* ptr;
     ptr = q.front;
@@ -110,7 +110,7 @@ int main()
     insertRear(&q,50);
     deleteFront(&q);
     insertFront(&q,60);
-    linked_list_traversal(q);
+    displayQueue(q);
 
     return 0;
 }
