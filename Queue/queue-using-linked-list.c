@@ -22,7 +22,7 @@ void initialize_queue(queue* q1)
 
 int isEmpty(queue *q)
 {
-    if(q->front==NULL && q->rear==NULL)
+    if(q->front==NULL || q->rear==NULL)
         return 1;
     else
         return 0;
@@ -48,12 +48,7 @@ int dequeue(queue* q)   //dequeue at front (head node)
 {
     if(q->front==NULL)
     {return -1;}
-    if(q->front == q->rear)  //empty condition
-    {
-        q->front = NULL;
-        q->rear = NULL;
-        return -1;
-    }
+    
     node* temp = q->front;
     int data = temp->data;
     q->front = q->front->next;
@@ -61,7 +56,7 @@ int dequeue(queue* q)   //dequeue at front (head node)
     return data;
 }
 
-void linked_list_traversal(queue q)
+void displayQueue(queue q)
 {
     node* ptr;
     ptr = q.front;
@@ -86,7 +81,7 @@ int main()
     enqueue(&q,60);
     enqueue(&q,70);
     enqueue(&q,80);
-    linked_list_traversal(q);
+    displayQueue(q);
 
     return 0;
 }
