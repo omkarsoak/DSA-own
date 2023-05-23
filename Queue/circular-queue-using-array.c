@@ -65,12 +65,7 @@ int dequeue(queue* q)   //deletion at front
     {
         return -1;
     }
-    if(q->front==q->rear)
-    {
-        if(q->size!=0)
-            q->size = 0;
-        return -1;
-    }
+    
     int data = q->arr[q->front];
     q->front=(q->front+1)% q->capacity;
     //using modulo operator so that, if front reaches capacity, it goes back to 0
