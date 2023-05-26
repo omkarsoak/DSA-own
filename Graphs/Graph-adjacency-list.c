@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "queue.h"
+#include "stack.h"
 
 typedef struct node
 {
@@ -74,25 +75,52 @@ void printGraph(graph* g)
 
 void BFS(graph* g,int start)
 {
-    queue* q = initialize_queue();
-    int* visited = (int*)calloc(g->n,sizeof(int));
+    queue* q = initialize_queue();   //exploration queue
+    int* visited = (int*)calloc(g->n,sizeof(int));   //visitied array with all elements init to 0
     visited[start] = 1;
     enqueue(q,start);
 
     while(isEmpty(q)!=1)
     {
-        int curr = dequeue(q);
+        int curr = dequeue(q);   //dequeue node to explore
         printf("%d ",curr);
         
-        node* ptr = g->adj[curr];
+        node* ptr = g->adj[curr];  //to traverse the list of curr node
         while (ptr!=NULL)
         {
             int adjacent = ptr->vertex;
             
-            if(visited[adjacent]==0)
+            if(visited[adjacent]==0)   //if not visited
             {
                 visited[adjacent] = 1;
                 enqueue(q,adjacent);
+            }
+            ptr = ptr->next;
+        }
+    }
+}
+
+void DFS(graph* g,int start)
+{
+    stack s = NULL;
+    int* visited = (int*)calloc(g->n,sizeof(int));   //visitied array with all elements init to 0
+    visited[start] = 1;
+    push(&s,start);
+
+    while(is_empty(s)!=1)
+    {
+        int curr = pop(&s);   //dequeue node to explore
+        printf("%d ",curr);
+        
+        node* ptr = g->adj[curr];  //to traverse the list of curr node
+        while (ptr!=NULL)
+        {
+            int adjacent = ptr->vertex;
+            
+            if(visited[adjacent]==0)   //if not visited
+            {
+                visited[adjacent] = 1;
+                push(&s,adjacent);
             }
             ptr = ptr->next;
         }
@@ -103,7 +131,7 @@ int main()
 {
     graph* g1 = createGraph(8);
     addEdge(g1,0,1,1);
-    addEdge(g1,1,2,1);
+    addEdge(g1,1,3,1);
     addEdge(g1,0,2,1);
     addEdge(g1,2,3,1);
     addEdge(g1,3,4,1);
@@ -116,5 +144,7 @@ int main()
     printGraph(g1);
 
     BFS(g1,0);
+    printf("\n");
+    DFS(g1,0);
     return 0;
 }
