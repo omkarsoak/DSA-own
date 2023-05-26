@@ -1,6 +1,7 @@
 typedef struct qnode
 {
-    int data;
+    int curr;
+    int parent;
     struct qnode* next;
 }qnode;
 
