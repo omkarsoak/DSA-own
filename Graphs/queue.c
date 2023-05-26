@@ -35,16 +35,19 @@ void enqueue(queue* q,int data)  //enqueue at rear (last node)
     q->rear = new_node;
 }
 
-int dequeue(queue* q)   //dequeue at front (head node)
+void dequeue(queue* q)   //dequeue at front (head node)
 {
     if(q->front==NULL)
     {return -1;}
     
     qnode* temp = q->front;
-    int data = temp->data;
     q->front = q->front->next;
     free(temp);
-    return data;
+}
+
+qnode* peekFront(queue* q)
+{
+    return q->front;
 }
 
 void displayQueue(queue q)
