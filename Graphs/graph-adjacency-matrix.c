@@ -3,6 +3,7 @@
 #include <limits.h>
 #include "queue.h"
 #include "stack.h"
+#include "queue2.h"
 
 typedef struct graph
 {
@@ -179,10 +180,10 @@ void BFS(graph* g,int start)
     }
 }
 
-void DFS(graph* g,int start)
+//iterative DFS
+void DFS(graph* g,int start,int* visited)
 {
     stack s = NULL;
-    int* visited = (int*)calloc(g->n,sizeof(int));  //visitied array with all elements init to 0
     visited[start] = 1;
 
     push(&s,start);
@@ -203,23 +204,17 @@ void DFS(graph* g,int start)
 
 
 //recursive DFS
-void dfs_helper(graph* g,int* visited,int node)
+void dfs(graph* g,int* visited,int node)
 {
     visited[node] = 1;
     printf("%d ",node);
     for(int i=0;i<g->n;i++)
     {
-        if(g->arr[node][i]==1 && visited[i]==0)   //if edge present & not visited
+        if(g->arr[node][i]!=0 && visited[i]==0)   //if edge present & not visited
         {
-            dfs_helper(g,visited,i);
+            dfs(g,visited,i);
         }
     }
-}
-
-void dfs(graph* g,int start)
-{
-    int* visited = (int*)calloc(g->n,sizeof(int));  //visitied array with all elements init to 0
-    dfs_helper(g,visited,start);
 }
 
 int isConnected(graph* g,int start)
@@ -251,6 +246,66 @@ int isConnected(graph* g,int start)
         }
     }
     return 1;
+}
+
+int components(graph* g)
+{
+    int* visited = (int*)calloc(g->n,sizeof(int));  //visitied array with all elements init to 0
+    int componentsCount = 0;
+    for(int i=0;i<g->n;i++)
+    {
+        if(visited[i]==0)
+        {
+            componentsCount++;
+            DFS(g,i,visited);
+            printf("\n");
+        }
+    }
+    return componentsCount;
+}
+
+
+int detectCycle(graph* g,int start,int* visited)
+{
+    queue2* q1 = initialize_queue2();
+    visited[start] = 1;
+    enqueue2(q1,start,-1);
+
+    while(isEmpty(q1)!=1)
+    {
+        qnode2* temp = peekFront(q1);
+        int curr = temp->curr;
+        int parent = temp->parent;
+        printf("%d ",curr);
+        dequeue2(q1);
+        
+        for(int i=0;i<g->n;i++)
+        {
+            if(g->arr[curr][i]!=0 && visited[i]==0)   //not visited
+            {
+                visited[i] = 1;
+                enqueue2(q1,i,curr);
+            }
+            else if(g->arr[curr][i]!=0 && parent!=i)   //visited already (but not from parent)
+            {
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+
+int isCycle(graph* g,int* visited)
+{
+    int cycles = 0;
+    for (int i = 0; i < g->n; i++)
+    {
+        if(visited[i]==0)
+        {
+            cycles += detectCycle(g,i,visited);
+        }
+    }
+    return cycles;
 }
 
 adjList* Prims(graph* g,int start)
@@ -289,12 +344,13 @@ adjList* Prims(graph* g,int start)
         //curr = minNode;
         
     }
+
     return MST;
 }
 
 int main()
 {
-    graph* g1 = initGraph("data.txt");
+    graph* g1 = initGraph("data2.txt");
     //display(g1);
 
     //int* degrees;
@@ -305,12 +361,13 @@ int main()
     //printf("\n");
     //DFS(g1,0);
     //printf("\n");
-    //dfs(g1,0);
+    int* visited = (int*)calloc(g1->n,sizeof(int));  //visitied array with all elements init to 0
+    dfs(g1,visited,0);
 
     //adjList* ans = Prims(g1,0);
     //printAdjList(ans);
 
-    printf("is: %d ",isConnected(g1,0));
+    //printf("is: %d ",isConnected(g1,0));
 
 
 
