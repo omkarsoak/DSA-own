@@ -4,6 +4,8 @@
 #include "stack.h"
 #include "PQ.h"
 #include "disjointSet.h"
+#include "PriorityQueue2.h"
+#include <limits.h>
 
 typedef struct node
 {
@@ -283,6 +285,40 @@ int MSTkruskals(graph* g)
     return MSTsum;
 }
 
+int* Dijkstras(graph* g,int start)
+{
+    PriorityQueue2* pq = createMinPriorityQueue2();
+    int* distanceTo = (int*)malloc(sizeof(int)*g->n); 
+    for(int i=0;i<g->n;i++)
+    {
+        distanceTo[i] = INT_MAX;  //infinite
+    }
+    distanceTo[start] = 0;
+    
+    insert2(pq,pair(start,0));
+
+    while(is_Empty2(pq)!=1)
+    {
+        Pair top = deleteMin2(pq);
+        int dist = top.distance;  //here,distance = distance from start
+        int curr = top.u;
+
+        node* ptr = g->adj[curr];
+        while (ptr!=NULL)
+        {
+            int adjacent = ptr->vertex;
+            int wt = ptr->weight;
+            if(dist+wt < distanceTo[adjacent])
+            {
+                distanceTo[adjacent] = dist+wt;   //update distanceTo
+                insert2(pq,pair(adjacent,distanceTo[adjacent]));
+            }
+            ptr = ptr->next;
+        }
+    }
+    return distanceTo;
+}
+
 
 int main()
 {
@@ -310,11 +346,13 @@ int main()
     //int* visited = (int*)calloc(g1->n,sizeof(int));   //visitied array with all elements init to 0
     //dfs(g1,0,visited);
     //printf("%d",isCycle(g1,visited));
-    printf("%d\n",MSTprims(g1,0));
+    //printf("%d\n",MSTprims(g1,0));
 
-    printf("%d\n",MSTkruskals(g1));
+    //printf("%d\n",MSTkruskals(g1));
 
-
+    //int* distance = (int*)malloc(sizeof(int)*g1->n);
+    int* arr = Dijkstras(g1,0);
+    print_Array(arr,g1->n);
 
     return 0;
 }
