@@ -258,6 +258,22 @@ int Search(node* root,int key)
         
 }
 
+//using depth first search
+int isbalanced(node* root)
+{
+    if(root==NULL)
+    {
+        return 1;
+    }
+    int leftHeight = get_height(root->left);
+    int rightHeight = get_height(root->right);
+    if(abs(leftHeight-rightHeight)<=1 && isbalanced(root->left) && isbalanced(root->right))
+    {
+        return 1;
+    }
+    return 0;
+}
+
 int main()
 {
     node* root = NULL;
@@ -279,5 +295,6 @@ int main()
     PreOrder(root);
     printf("\n");
     printf("Element found:%d ",Search(root,10));
+    printf("Balnced: %d",isbalanced(root));
     return 0;
 }

@@ -15,10 +15,12 @@ METHODS:
 - iterative Inorder, Preorder, Postorder (using stack)
 - Level order traversal (using queue)
 - height of tree
-- find root to node path
-- find ancestors of a given node
+- find node to root path
+- find least common ancestor
 - mirror a tree
-- check if tree is mirror
+- construct tree from preorder + inorder
+- construct tree from postorder + inorder
+- construct tree from preorder + postorder
 
 *****************/
 #include <stdio.h>
@@ -749,12 +751,131 @@ int height(node* root)
 }
 
 //find mirror image of the tree
+void mirrorImage(node* root) 
+{
+    if (root == NULL)
+        return;
 
-//find root to node path
-//find ancestors of a given node
+    // Swap the left and right child of the current node
+    node* temp = root->left;
+    root->left = root->right;
+    root->right = temp;
+
+    // Recursively mirror the left and right subtrees
+    mirrorImage(root->left);
+    mirrorImage(root->right);
+}
+
+//find ancestors of a given node (node to root path)
+int findAncestors(node* root, int value) 
+{
+    if (root == NULL)
+    {
+        return 0;
+    }
+
+    if (root->data == value)
+    {
+        return 1;
+    }
+
+    if (findAncestors(root->left, value) || findAncestors(root->right, value)) 
+    {
+        printf("%d ", root->data);
+        return 1;
+    }
+
+    return 0;
+}
+
+//least common ancestor
+node* findLCA(node* root, int value1, int value2) 
+{
+    if (root == NULL)
+        return NULL;
+
+    if (root->data == value1 || root->data == value2)
+        return root;
+
+    //Recursively check for the LCA in the left and right subtrees
+    node* leftLCA = findLCA(root->left, value1, value2);
+    node* rightLCA = findLCA(root->right, value1, value2);
+
+
+    if (leftLCA!=NULL && rightLCA!=NULL)
+    {
+        return root;
+    }
+    else if(leftLCA!=NULL)
+    {
+        return leftLCA;
+    }
+    else
+    {
+        return rightLCA;
+    }
+}
+
+int linearSearch(int* arr,int start,int end,int data)
+{
+    for(int i=start;i<end;i++)
+    {
+        if(arr[i]==data)
+        {
+            return i;
+        }
+    }
+    return 0;
+}
 
 //construct BT from given preorder + inorder
+node* constructBinaryTree(int preorder[], int inorder[], int start, int end) 
+{
+    static int preIndex = 0;
+
+    if (start > end)
+        return NULL;
+
+    node* newNode = create_node(preorder[preIndex]);
+    preIndex++;
+
+    if (start == end)
+        return newNode;
+
+    // Search for the index of the current node in the inorder traversal
+    int inIndex = linearSearch(inorder, start, end, newNode->data);
+
+    // Recursively construct the left and right subtrees
+    newNode->left = constructBinaryTree(preorder, inorder, start, inIndex - 1);
+    newNode->right = constructBinaryTree(preorder, inorder, inIndex + 1, end);
+
+    return newNode;
+}
+
 //construct BT from given postorder + inorder
+node* constructBinaryTree(int postorder[], int inorder[], int start, int end) 
+{
+    static int postIndex = sizeof(postorder)/sizeof(postorder[0]) - 1;
+
+    if (start > end)
+        return NULL;
+
+    node* newNode = create_node(postorder[postIndex]);
+    postIndex--;
+
+    if (start == end)
+        return newNode;
+
+    // Search for the index of the current node in the inorder traversal
+    int inIndex = linearSearch(inorder, start, end, newNode->data);
+
+    // Recursively construct the right and left subtrees
+    newNode->right = constructBinaryTree(postorder, inorder, inIndex + 1, end);
+    newNode->left = constructBinaryTree(postorder, inorder, start, inIndex - 1);
+
+    return newNode;
+}
+
 //construct BT from given preorder + postorder 
 
 
@@ -775,7 +896,11 @@ int main()
     //iterative_PostOrder(root);
     //printf("ans: %d ",Count_Nodes(root));
     //printf("ans: %d ",count_internal_nodes(root));
-    LevelOrder(root);
+    //LevelOrder(root);
+    node* temp = findLCA(root,1,4);
+    printf("%d",temp->data);
+    findAncestors(root,4);
+
  
 
     return 0;
