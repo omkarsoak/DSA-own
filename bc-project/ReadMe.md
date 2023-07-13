@@ -1,4 +1,4 @@
-# BC Binary calculator - (A Linux Utility)
+# Arbitrary length binary calculator (bc) - Linux Utility
 - Arbitrary precision calculator that can add, subtract, multiply and divide arbitrary length numbers
 - Can compute arbitrary length expressions
 - numbers are stored in the form of linked list, with each digit forming a node
