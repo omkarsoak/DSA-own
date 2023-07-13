@@ -5,13 +5,25 @@
 - Example of calculation is $12038138198*120398019281-1232198319283+834729387242/32242$
 
 ------------
-## WORKING
-Input: On the command line
+## Run Locally
+
+```bash
+gcc -Wall main.c linked_list.c stack.c operations.c -o main
+```
 INPUT: STRING OF NUMBERS AND '+ - * /' IN BETWEEN 
 OUPUT: ANSWER 
 EXAMPLE:
 198237918479+83634875862-123312*242
-Answer: 281842952837
+
+```bash
+./main 198237918479+83634875862-123312*242
+```
+
+## OUTPUT
+```bash
+281842952837
+```
+
 
 ## DATA STRUCTURES USED:
 - LINKED LIST (to store each number with each digit as a node in the LL)
@@ -21,5 +33,5 @@ Answer: 281842952837
 
 -------------
 ### Author
-Omkar Oak - 112103099
+[Omkar Oak - 112103099](https://github.com/omkaroak26)
 
