@@ -74,7 +74,7 @@ void insertion_sort(int arr[],int n) //iterative (copy method)
             arr[j+1]=arr[j];
             j--;
         }
-        arr[j]=key;
+        arr[j+1]=key;
     }
 }
 
